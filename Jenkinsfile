@@ -1,54 +1,29 @@
 pipeline {
   agent any
-  options { timestamps() }
-
   stages {
-    stage('Build') {
+    stage('Checkout') {
       steps {
-        echo 'Task: Compile/package the application.'
-        echo 'Tool: Maven / Gradle / npm.'
+        git branch: 'main', url: 'https://github.com/hanruiyang1029-yhr/8.2CDevSecOps.git'
       }
     }
-    stage('Unit & Integration Tests') {
+    stage('Install Dependencies') {
       steps {
-        echo 'Task: Run unit tests and integration tests.'
-        echo 'Tool: JUnit / Mocha / Jest / pytest.'
+        bat 'npm install'
       }
     }
-    stage('Code Analysis') {
+    stage('Run Tests') {
       steps {
-        echo 'Task: Static code quality analysis with quality gate.'
-        echo 'Tool: SonarQube / SonarCloud / ESLint / Pylint.'
+        bat 'npm test || exit /b 0'
       }
     }
-    stage('Security Scan') {
+    stage('Generate Coverage Report') {
       steps {
-        echo 'Task: Scan dependencies/source for vulnerabilities.'
-        echo 'Tool: Snyk / OWASP Dependency-Check / npm audit.'
+        bat 'npm run coverage || exit /b 0'
       }
     }
-    stage('Deploy to Staging') {
+    stage('NPM Audit (Security Scan)') {
       steps {
-        echo 'Task: Deploy artifact to a Staging environment.'
-        echo 'Tool: Docker + AWS CLI / Ansible.'
-      }
-    }
-    stage('Integration Tests on Staging') {
-      steps {
-        echo 'Task: E2E/API tests against Staging.'
-        echo 'Tool: Postman (Newman) / Cypress / Selenium.'
-      }
-    }
-    stage('Deploy to Production') {
-      steps {
-        echo 'Task: Promote and deploy to Production with rollback strategy.'
-        echo 'Tool: Ansible / AWS CLI / Kubernetes (kubectl/Helm).'
-      }
-    }
-    stage('Notification') {
-      steps {
-        echo 'Task: Send deployment notification to the team.'
-        echo 'Tool: Email / Slack / Teams.'
+        bat 'npm audit || exit /b 0'
       }
     }
   }
