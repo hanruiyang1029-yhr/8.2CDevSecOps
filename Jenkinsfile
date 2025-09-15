@@ -22,7 +22,6 @@ pipeline {
 
     stage('Generate Coverage Report') {
       steps {
-        
         bat 'npm run coverage || exit /b 0'
       }
     }
@@ -33,13 +32,10 @@ pipeline {
       }
     }
 
-   
     stage('SonarCloud Analysis') {
       steps {
-        withCredentials([string(credentialsId: 'SONAR', variable: 'SONAR_TOKEN')]) 
-          bat '''
-            npx sonar-scanner -D"sonar.login=%SONAR_TOKEN%"
-          '''
+        withCredentials([string(credentialsId: 'SONAR', variable: 'SONAR_TOKEN')]) {
+          bat 'npx sonar-scanner -Dsonar.login=%SONAR_TOKEN%'
         }
       }
     }
