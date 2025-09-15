@@ -2,8 +2,7 @@ pipeline {
   agent any
 
   options {
-    ansiColor('xterm')
-    timeout(time: 30, unit: 'MINUTES')
+    timestamps()
   }
 
   stages {
@@ -41,11 +40,12 @@ pipeline {
       steps {
         withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
           withEnv(['SONAR_SCANNER_OPTS=-Xmx512m']) {
-            bat 'npx sonar-scanner -Dsonar.token=%SONAR_TOKEN%'
+            bat "npx sonar-scanner -Dsonar.token=%SONAR_TOKEN%"
           }
         }
       }
     }
   }
 }
+
 
