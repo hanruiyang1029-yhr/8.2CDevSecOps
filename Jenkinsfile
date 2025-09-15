@@ -39,9 +39,20 @@ pipeline {
     stage('SonarCloud Analysis') {
       steps {
         withCredentials([string(credentialsId: 'SONAR', variable: 'SONAR_TOKEN')]) {
-          withEnv(['NODE_OPTIONS=--max-old-space-size=4096', 'SONAR_SCANNER_OPTS=-Xmx1024m']) {
+          withEnv([
+            'NODE_OPTIONS=--max-old-space-size=4096',
+            'SONAR_SCANNER_OPTS=-Xmx1024m',
+            'SONAR_HOST_URL=https://sonarcloud.io'
+          ]) {
             retry(2) {
-              bat 'npx sonar-scanner -Dsonar.token=%SONAR_TOKEN% -Dsonar.projectKey=hanruiyang1029-yhr_8.2CDevSecOps -Dsonar.organization=hanruiyang1029-yhr -Dsonar.javascript.node.maxspace=4096'
+              bat '''
+                npx sonar-scanner ^
+                  -Dsonar.host.url=%SONAR_HOST_URL% ^
+                  -Dsonar.organization=hanruiyang1029-yhr ^
+                  -Dsonar.projectKey=hanruiyang1029-yhr_8.2CDevSecOps ^
+                  -Dsonar.token=%SONAR_TOKEN% ^
+                  -Dsonar.javascript.node.maxspace=4096
+              '''
             }
           }
         }
@@ -55,6 +66,7 @@ pipeline {
     }
   }
 }
+
 
 
 
