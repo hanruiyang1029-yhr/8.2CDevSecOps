@@ -37,15 +37,24 @@ pipeline {
     }
 
     stage('SonarCloud Analysis') {
-  steps {
-    withCredentials([string(credentialsId: 'SONAR', variable: 'SONAR_TOKEN')]) {
-      withEnv(['SONAR_SCANNER_OPTS=-Xmx512m']) {
-        bat 'npx sonar-scanner -Dsonar.token=%SONAR_TOKEN%'
+      steps {
+        withCredentials([string(credentialsId: 'SONAR', variable: 'SONAR_TOKEN')]) {
+          withEnv(['NODE_OPTIONS=--max-old-space-size=4096', 'SONAR_SCANNER_OPTS=-Xmx1024m']) {
+            retry(2) {
+              bat 'npx sonar-scanner -Dsonar.token=%SONAR_TOKEN% -Dsonar.projectKey=hanruiyang1029-yhr_8.2CDevSecOps -Dsonar.organization=hanruiyang1029-yhr -Dsonar.javascript.node.maxspace=4096'
+            }
           }
         }
       }
     }
   }
+
+  post {
+    always {
+      archiveArtifacts artifacts: 'coverage/**', onlyIfSuccessful: false
+    }
+  }
 }
+
 
 
