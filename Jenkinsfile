@@ -37,10 +37,10 @@ pipeline {
     }
 
     stage('SonarCloud Analysis') {
-      steps {
-        withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
-          withEnv(['SONAR_SCANNER_OPTS=-Xmx512m']) {
-            bat "npx sonar-scanner -Dsonar.token=%SONAR_TOKEN%"
+  steps {
+    withCredentials([string(credentialsId: 'SONAR', variable: 'SONAR_TOKEN')]) {
+      withEnv(['SONAR_SCANNER_OPTS=-Xmx512m']) {
+        bat 'npx sonar-scanner -Dsonar.token=%SONAR_TOKEN%'
           }
         }
       }
